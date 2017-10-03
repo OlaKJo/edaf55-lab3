@@ -1,18 +1,46 @@
 package todo;
 
-
 import se.lth.cs.realtime.*;
+import se.lth.cs.realtime.event.RTEvent;
 import done.AbstractWashingMachine;
 
-
 public class SpinController extends PeriodicThread {
-	// TODO: add suitable attributes
+
+	AbstractWashingMachine mach;
+	private int currentMode;
+	private SpinEvent ev;
+	private long startTime;
+	private int currentDir = AbstractWashingMachine.SPIN_LEFT;
 
 	public SpinController(AbstractWashingMachine mach, double speed) {
-		super((long) (1000/speed)); // TODO: replace with suitable period
+		super((long) (1000 / speed)); // TODO: replace with suitable period
+		this.mach = mach;
 	}
 
 	public void perform() {
-		// TODO: implement this method
+
+		ev = (SpinEvent) mailbox.tryFetch();
+		if (ev != null) {
+		currentMode = ev.getMode();
+		}
+
+		switch (currentMode) {
+		case SpinEvent.SPIN_OFF:
+			mach.setSpin(AbstractWashingMachine.SPIN_OFF);
+			break;
+		case SpinEvent.SPIN_SLOW:
+			long currentTime = System.currentTimeMillis();
+			if(currentTime > (startTime + 60000)) {
+				startTime = currentTime;
+				currentDir = currentDir%2+1;
+				mach.setSpin(currentDir);
+			}
+			break;
+		case SpinEvent.SPIN_FAST:
+			mach.setSpin(AbstractWashingMachine.SPIN_FAST);
+			break;
+		default:
+			break;
+		}
 	}
 }

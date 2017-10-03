@@ -11,41 +11,34 @@ package done;
 import se.lth.cs.realtime.*;
 
 /**
- * Implementation of abstract AbstractWashingMachine class.
- * Interfaces to the simulation.
+ * Implementation of abstract AbstractWashingMachine class. Interfaces to the
+ * simulation.
  */
 
-class WashingMachineSimulation
-extends AbstractWashingMachine
-implements Runnable, java.awt.event.ActionListener {
+class WashingMachineSimulation extends AbstractWashingMachine implements Runnable, java.awt.event.ActionListener {
 
 	// ------------------------------------------------------------- CONSTRUCTOR
 
 	/**
-	 * @param speed Simulation speed (1 for normal speed, >1 for faster)
+	 * @param speed
+	 *            Simulation speed (1 for normal speed, >1 for faster)
 	 */
-	public WashingMachineSimulation(double speed,
-			double freakShowProbability) {
-		mySpeed          = speed;
-		myTemperature    = AMBIENT_TEMP;
-		myWaterLevel     = 0;
-		iAmLocked        =
-				iAmHeating       =
-				iAmFilling       =
-				iAmDraining      =
-				iAmOverHeating   =
-				iAmOverFlowing   = false;
-		mySpin           = SPIN_OFF;
+	public WashingMachineSimulation(double speed, double freakShowProbability) {
+		mySpeed = speed;
+		myTemperature = AMBIENT_TEMP;
+		myWaterLevel = 0;
+		iAmLocked = iAmHeating = iAmFilling = iAmDraining = iAmOverHeating = iAmOverFlowing = false;
+		mySpin = SPIN_OFF;
 		myButtonListener = null;
-		myThread         = new OngoingThread(this);
-		myView           = new WashingView(this, mySpeed, freakShowProbability);
+		myThread = new OngoingThread(this);
+		myView = new WashingView(this, mySpeed, freakShowProbability);
 	}
 
 	// ------------------------------------------------- PACKAGE PRIVATE METHODS
 
 	/**
-	 * Set button listener. The listener's processButton() method will be
-	 * called whenever a button is pressed.
+	 * Set button listener. The listener's processButton() method will be called
+	 * whenever a button is pressed.
 	 */
 	void setButtonListener(ButtonListener l) {
 		myButtonListener = l;
@@ -90,6 +83,7 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Read the water temperature.
+	 * 
 	 * @return Temperature in Centigrades (0-100).
 	 */
 
@@ -99,9 +93,10 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Read the water level in the machine.
-	 * @return A real number between 0 and 1, where 1 indicates an
-	 *   absolutely full (i.e. overflowing) machine and 0
-	 *   indicates a (practically) empty one.
+	 * 
+	 * @return A real number between 0 and 1, where 1 indicates an absolutely
+	 *         full (i.e. overflowing) machine and 0 indicates a (practically)
+	 *         empty one.
 	 */
 
 	public synchronized double getWaterLevel() {
@@ -110,6 +105,7 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Check if the front door is open.
+	 * 
 	 * @return True if the door is locked, false if it is open.
 	 */
 
@@ -119,6 +115,7 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Check whether currently heating.
+	 * 
 	 * @return True if currently heating, false otherwise.
 	 */
 	public synchronized boolean isHeating() {
@@ -127,7 +124,9 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Turns the heating on/off.
-	 * @param on True means "heat on", false means "heat off".
+	 * 
+	 * @param on
+	 *            True means "heat on", false means "heat off".
 	 */
 
 	public synchronized void setHeating(boolean on) {
@@ -136,7 +135,9 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Open/close the water input tap.
-	 * @param on True means "open tap", false means "close tap".
+	 * 
+	 * @param on
+	 *            True means "open tap", false means "close tap".
 	 */
 
 	public synchronized void setFill(boolean on) {
@@ -146,7 +147,9 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Start/stop the water drain pump.
-	 * @param on True means "start pump", false means "stop pump".
+	 * 
+	 * @param on
+	 *            True means "start pump", false means "stop pump".
 	 */
 
 	public synchronized void setDrain(boolean on) {
@@ -156,7 +159,9 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Lock/unlock the front door.
-	 * @param on True means "lock door", false means "unlock door".
+	 * 
+	 * @param on
+	 *            True means "lock door", false means "unlock door".
 	 */
 
 	public synchronized void setLock(boolean on) {
@@ -166,7 +171,9 @@ implements Runnable, java.awt.event.ActionListener {
 
 	/**
 	 * Control the turning motor.
-	 * @param direction 1=Left slow, 2=right slow, 3=left fast, 0=stop.
+	 * 
+	 * @param direction
+	 *            1=Left slow, 2=right slow, 3=left fast, 0=stop.
 	 */
 
 	public synchronized void setSpin(int direction) {
@@ -175,8 +182,8 @@ implements Runnable, java.awt.event.ActionListener {
 	}
 
 	/**
-	 * Turn the washing machine on. Called early during initialization 
-	 * by main().
+	 * Turn the washing machine on. Called early during initialization by
+	 * main().
 	 */
 
 	public synchronized void start() {
@@ -191,7 +198,7 @@ implements Runnable, java.awt.event.ActionListener {
 
 		// Adjust sleeping time to avoid too small times
 		double sampleInterval = DESIRED_INTERVAL;
-		double execInterval   = sampleInterval / mySpeed;
+		double execInterval = sampleInterval / mySpeed;
 
 		if (execInterval < MINIMUM_INTERVAL) {
 			execInterval = MINIMUM_INTERVAL;
@@ -201,25 +208,26 @@ implements Runnable, java.awt.event.ActionListener {
 		try {
 			long t = 0;
 			long start = System.currentTimeMillis();
-			while(true) {
+			while (true) {
 				// Update simulation state
-				updateState(sampleInterval/1000.0);
+				updateState(sampleInterval / 1000.0);
 
 				// Delay thread execution
 				t += execInterval;
 				long time = System.currentTimeMillis();
 				long sleep = t - (time - start);
-				RTThread.sleep(sleep>0?sleep:0);
+				RTThread.sleep(sleep > 0 ? sleep : 0);
 			}
-		}
-		catch(Exception e) { /* Shouldn't happen */ }
+		} catch (Exception e) {
+			/* Shouldn't happen */ }
 	}
 
 	/**
-	 * Listener method; automatically called by AWT upon
-	 * window events, such as when a button is clicked.
+	 * Listener method; automatically called by AWT upon window events, such as
+	 * when a button is clicked.
 	 *
-	 * @param e An ActionEvent describing the event.
+	 * @param e
+	 *            An ActionEvent describing the event.
 	 */
 
 	public void actionPerformed(java.awt.event.ActionEvent e) {
@@ -242,7 +250,8 @@ implements Runnable, java.awt.event.ActionListener {
 	/**
 	 * Update state variables. Called periodically by run().
 	 *
-	 * @param dt Time since last state update (seconds).
+	 * @param dt
+	 *            Time since last state update (seconds).
 	 */
 
 	private synchronized void updateState(double dt) {
@@ -251,8 +260,8 @@ implements Runnable, java.awt.event.ActionListener {
 		// Update water level.
 
 		// For water input flow:
-		//   Set the new temperature to the weighted average
-		//   of old temperature and that of the cold water (weighted by volume).
+		// Set the new temperature to the weighted average
+		// of old temperature and that of the cold water (weighted by volume).
 		if (iAmFilling) {
 			dV = FLOW_IN * dt;
 			iAmOverFlowing = (myWaterLevel + dV >= MAX_WATER_LEVEL);
@@ -260,17 +269,16 @@ implements Runnable, java.awt.event.ActionListener {
 				dV = MAX_WATER_LEVEL - myWaterLevel;
 
 			// Adjust temperature to compensate for the cold new water
-			myTemperature = (myTemperature * myWaterLevel + COOL_WATER_TEMP * dV)
-					/ (myWaterLevel + dV);
+			myTemperature = (myTemperature * myWaterLevel + COOL_WATER_TEMP * dV) / (myWaterLevel + dV);
 
 			myWaterLevel += dV;
 		}
 
 		// For water output flow:
-		//   If the water level comes down to zero, set temperature to 20 degs C.
+		// If the water level comes down to zero, set temperature to 20 degs C.
 		if (iAmDraining) {
 			double prevLevel = myWaterLevel;
-			dV = - FLOW_OUT * dt;
+			dV = -FLOW_OUT * dt;
 			myWaterLevel += dV;
 			if (myWaterLevel < 0)
 				myWaterLevel = 0;
@@ -281,13 +289,12 @@ implements Runnable, java.awt.event.ActionListener {
 		// Update temperature.
 
 		// For heating:
-		//   dT = dt * HEATING_CAPACITY / (V * WATER_CAPACITIVITY)
-		if(iAmHeating) {
-			if(myWaterLevel > 0) {
+		// dT = dt * HEATING_CAPACITY / (V * WATER_CAPACITIVITY)
+		if (iAmHeating) {
+			if (myWaterLevel > 0) {
 				dT = dt * HEATING_CAPACITY / (myWaterLevel * WATER_CAPACITIVITY);
 				myTemperature += dT;
-			}
-			else
+			} else
 				myTemperature = 100;
 
 			// Catch fire when temperature becomes 100 deg C
@@ -298,9 +305,9 @@ implements Runnable, java.awt.event.ActionListener {
 		}
 
 		// For cooling (very simple model):
-		//   dT = - dt * (T - AMBIENT_TEMP) / COOLING_FACTOR
-		if (! iAmOverHeating) {
-			dT = - dt * (myTemperature - AMBIENT_TEMP) / COOLING_FACTOR;
+		// dT = - dt * (T - AMBIENT_TEMP) / COOLING_FACTOR
+		if (!iAmOverHeating) {
+			dT = -dt * (myTemperature - AMBIENT_TEMP) / COOLING_FACTOR;
 			myTemperature += dT;
 		}
 	}
@@ -346,13 +353,13 @@ implements Runnable, java.awt.event.ActionListener {
 	private static final double MAX_WATER_LEVEL = 20.0;
 
 	// Water input flow (l/s)
-	private static final double FLOW_IN = 0.11345677;  // Approx. 0.1
+	private static final double FLOW_IN = 0.11345677; // Approx. 0.1
 
 	// Water output flow (l/s)
-	private static final double FLOW_OUT = 0.1926345;  // Approx. 0.2
+	private static final double FLOW_OUT = 0.1926345; // Approx. 0.2
 
 	// Radiator heating capacity (kW)
-	private static final double HEATING_CAPACITY = 2034.5;  // Approx. 2kW
+	private static final double HEATING_CAPACITY = 2034.5; // Approx. 2kW
 
 	// Cooling proportional constant (a.k.a. Boris' Magic Number)
 	private static final double COOLING_FACTOR = 4200;

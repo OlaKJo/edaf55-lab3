@@ -34,8 +34,9 @@ class WashingProgram3 extends WashingProgram {
 			double speed,
 			TemperatureController tempController,
 			WaterController waterController,
-			SpinController spinController) {
-		super(mach, speed, tempController, waterController, spinController);
+			SpinController spinController,
+			TimeController timeController) {
+		super(mach, speed, tempController, waterController, spinController, timeController);
 	}
 
 	// ---------------------------------------------------------- PUBLIC METHODS
