@@ -21,7 +21,7 @@ public class SpinController extends PeriodicThread {
 
 		ev = (SpinEvent) mailbox.tryFetch();
 		if (ev != null) {
-		currentMode = ev.getMode();
+			currentMode = ev.getMode();
 		}
 
 		switch (currentMode) {
@@ -30,14 +30,16 @@ public class SpinController extends PeriodicThread {
 			break;
 		case SpinEvent.SPIN_SLOW:
 			long currentTime = System.currentTimeMillis();
-			if(currentTime > (startTime + 60000)) {
+			if (currentTime > (startTime + 60000)) {
 				startTime = currentTime;
-				currentDir = currentDir%2+1;
+				currentDir = currentDir % 2 + 1;
 				mach.setSpin(currentDir);
 			}
 			break;
 		case SpinEvent.SPIN_FAST:
-			mach.setSpin(AbstractWashingMachine.SPIN_FAST);
+			if (mach.getWaterLevel() == 0) {
+				mach.setSpin(AbstractWashingMachine.SPIN_FAST);
+			}
 			break;
 		default:
 			break;

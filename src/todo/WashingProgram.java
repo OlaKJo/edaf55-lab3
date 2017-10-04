@@ -57,7 +57,7 @@ public abstract class WashingProgram extends RTThread {
 	 *            The SpinController to use
 	 */
 	protected WashingProgram(AbstractWashingMachine mach, double speed, TemperatureController tempController,
-			WaterController waterController, SpinController spinController, TimeController timeController) {
+			WaterController waterController, SpinController spinController) {
 		super();
 
 		myMachine = mach;
@@ -65,7 +65,6 @@ public abstract class WashingProgram extends RTThread {
 		myTempController = tempController;
 		myWaterController = waterController;
 		mySpinController = spinController;
-		myTimeController = timeController;
 	}
 
 	// ---------------------------------------------------- OVERRIDDEN METHODS
@@ -129,8 +128,6 @@ public abstract class WashingProgram extends RTThread {
 	 * The spin controller
 	 */
 	protected SpinController mySpinController;
-
-	protected TimeController myTimeController;
 
 	protected void drainAndIdle() {
 		// Drain

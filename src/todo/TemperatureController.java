@@ -9,7 +9,6 @@ public class TemperatureController extends PeriodicThread {
 
 	AbstractWashingMachine mach;
 	private int currentMode;
-	private boolean busy;
 	private TemperatureEvent ev;
 	private boolean sentAck;
 
@@ -19,50 +18,40 @@ public class TemperatureController extends PeriodicThread {
 	}
 
 	public void perform() {
-
-		
-
-		if (!busy) {
-
-			ev = (TemperatureEvent) mailbox.doFetch();
-			currentMode = ev.getMode();
+		TemperatureEvent currentEvent = (TemperatureEvent) mailbox.tryFetch();
+		if (currentEvent != null) {
+			currentMode = currentEvent.getMode();
 			sentAck = false;
-			
-			switch (currentMode) {
-			case TemperatureEvent.TEMP_IDLE:
-				System.out.println("ERROR");
+			ev = currentEvent;
+		}
+
+		if (ev == null) {
+			return;
+		}
+
+		switch (currentMode) {
+		case TemperatureEvent.TEMP_IDLE:
+			mach.setHeating(false);
+			break;
+		case TemperatureEvent.TEMP_SET:
+			if (mach.getTemperature() > (ev.getTemperature() - 1.5)) {
 				mach.setHeating(false);
-				break;
-			case TemperatureEvent.TEMP_SET:
-				mach.setHeating(true);
-				busy = true;
-				break;
-			default:
-				break;
-			}
-		} else {
-			
-			switch (currentMode) {
-			case TemperatureEvent.TEMP_IDLE:
-				mach.setHeating(false);
-				busy = false;
-				break;
-			case TemperatureEvent.TEMP_SET:
-				double goalTemp = ev.getTemperature();
-				if(mach.getTemperature() > (goalTemp - 1.75)) {
-					mach.setHeating(false);
-					if(!sentAck) {
-						((RTThread)ev.getSource()).putEvent(new RTEvent(this));
-						sentAck = true;
-					}
-				} else {
+				if (!sentAck) {
+					((RTThread) ev.getSource()).putEvent(new AckEvent(this));
+					sentAck = true;
+				}
+			} else {
+				if (mach.getWaterLevel() > 0) {
 					mach.setHeating(true);
 				}
-					
-				break;
-			default:
-				break;
 			}
+			break;
+
+		default:
+			System.out.println("default first loop!!");
+
+			break;
 		}
+
 	}
 }

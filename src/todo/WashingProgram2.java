@@ -20,7 +20,7 @@ import se.lth.cs.realtime.RTThread;
  * <LI>Unlocks the hatch.
  * </UL>
  */
-class WashingProgram1 extends WashingProgram {
+class WashingProgram2 extends WashingProgram {
 
 	// ------------------------------------------------------------- CONSTRUCTOR
 
@@ -36,7 +36,7 @@ class WashingProgram1 extends WashingProgram {
 	 * @param spinController
 	 *            The SpinController to use
 	 */
-	public WashingProgram1(AbstractWashingMachine mach, double speed, TemperatureController tempController,
+	public WashingProgram2(AbstractWashingMachine mach, double speed, TemperatureController tempController,
 			WaterController waterController, SpinController spinController) {
 		super(mach, speed, tempController, waterController, spinController);
 	}
@@ -49,6 +49,10 @@ class WashingProgram1 extends WashingProgram {
 	 */
 	protected void wash() throws InterruptedException {
 
+		/*
+		 * White wash: Like program 1, but with a 15 minute pre-wash in 40 ◦ C.
+		 * The main wash should be performed in 90 ◦ C.
+		 */
 		/*
 		 * Program 1 Color wash: Lock the hatch, let water into the machine,
 		 * heat to 60C, keep the temperature for 30 minutes, drain, rinse 5
@@ -66,11 +70,19 @@ class WashingProgram1 extends WashingProgram {
 		// Fill
 		fillAndIdle(10);
 
-		// Heat to 60 C
-		myTempController.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_SET, 60.0));
-		System.out.println("waiting for ack");
+		// Heat to 40 C
+		myTempController.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_SET, 40.0));
 		mailbox.doFetch();
-		System.out.println("received ack");
+		
+		// turn on spin
+		mySpinController.putEvent(new SpinEvent(this, SpinEvent.SPIN_SLOW));
+		
+		// turn on timer 15 minutes;
+		RTThread.sleep((long) (15 * 60 * 1000 / mySpeed));
+
+		// Heat to 90 C
+		myTempController.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_SET, 90.0));
+		mailbox.doFetch();
 
 		// turn on spin
 		mySpinController.putEvent(new SpinEvent(this, SpinEvent.SPIN_SLOW));

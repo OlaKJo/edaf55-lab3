@@ -8,7 +8,7 @@
 
 package todo;
 
-import done.*;
+import done.AbstractWashingMachine;
 
 /**
  * Program 3 of washing machine. Does the following:
@@ -19,7 +19,7 @@ import done.*;
  * <LI>Unlocks the hatch.
  * </UL>
  */
-class WashingProgram3 extends WashingProgram {
+class WashingProgram0 extends WashingProgram {
 
 	// ------------------------------------------------------------- CONSTRUCTOR
 
@@ -35,7 +35,7 @@ class WashingProgram3 extends WashingProgram {
 	 * @param spinController
 	 *            The SpinController to use
 	 */
-	public WashingProgram3(AbstractWashingMachine mach, double speed, TemperatureController tempController,
+	public WashingProgram0(AbstractWashingMachine mach, double speed, TemperatureController tempController,
 			WaterController waterController, SpinController spinController) {
 		super(mach, speed, tempController, waterController, spinController);
 	}
@@ -47,21 +47,8 @@ class WashingProgram3 extends WashingProgram {
 	 * when the start() method is called.
 	 */
 	protected void wash() throws InterruptedException {
-
-		// Switch of temp regulation
-		myTempController.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_IDLE, 0.0));
-
-		// Switch off spin
-		mySpinController.putEvent(new SpinEvent(this, SpinEvent.SPIN_OFF));
-
-		// Drain
-		myWaterController.putEvent(new WaterEvent(this, WaterEvent.WATER_DRAIN, 0.0));
-		mailbox.doFetch(); // Wait for Ack
-
-		// Set water regulation to idle => drain pump stops
+		myTempController.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_IDLE, 0));
 		myWaterController.putEvent(new WaterEvent(this, WaterEvent.WATER_IDLE, 0.0));
-
-		// Unlock
-		myMachine.setLock(false);
+		mySpinController.putEvent(new SpinEvent(this, SpinEvent.SPIN_OFF));
 	}
 }
