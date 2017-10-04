@@ -9,7 +9,7 @@ public class WashingController implements ButtonListener {
 	private AbstractWashingMachine mach;
 	private double speed;
 	private WashingProgram prog;
-	
+
 	public WashingController(AbstractWashingMachine mach, double speed) {
 		tempController = new TemperatureController(mach, speed);
 		tempController.start();
@@ -27,21 +27,35 @@ public class WashingController implements ButtonListener {
 		case 0:
 			if (prog != null) {
 				prog.interrupt();
+				try {
+					prog.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				prog = null;
 			}
-			prog = new WashingProgram0(mach, speed, tempController, waterController, spinController);
-			prog.start();
 			break;
 		case 1:
-			prog = new WashingProgram1(mach, speed, tempController, waterController, spinController);
-			prog.start();
+			if (prog == null) {
+				prog = new WashingProgram1(mach, speed, tempController,
+						waterController, spinController);
+				prog.start();
+			}
 			break;
+
 		case 2:
-			prog = new WashingProgram2(mach, speed, tempController, waterController, spinController);
-			prog.start();
+			if (prog == null) {
+				prog = new WashingProgram2(mach, speed, tempController,
+						waterController, spinController);
+				prog.start();
+			}
 			break;
 		case 3:
-			prog = new WashingProgram3(mach, speed, tempController, waterController, spinController);
-			prog.start();
+			if (prog == null) {
+				prog = new WashingProgram3(mach, speed, tempController,
+						waterController, spinController);
+				prog.start();
+			}
 			break;
 		default:
 			break;
