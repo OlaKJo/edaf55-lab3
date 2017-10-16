@@ -39,6 +39,8 @@ public class SpinController extends PeriodicThread {
 		case SpinEvent.SPIN_FAST:
 			if (mach.getWaterLevel() == 0) {
 				mach.setSpin(AbstractWashingMachine.SPIN_FAST);
+			} else {
+				mach.setSpin(AbstractWashingMachine.SPIN_OFF);
 			}
 			break;
 		default:

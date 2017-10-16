@@ -68,9 +68,9 @@ class WashingProgram1 extends WashingProgram {
 
 		// Heat to 60 C
 		myTempController.putEvent(new TemperatureEvent(this, TemperatureEvent.TEMP_SET, 60.0));
-		System.out.println("waiting for ack");
+		//System.out.println("waiting for ack");
 		mailbox.doFetch();
-		System.out.println("received ack");
+		//System.out.println("received ack");
 
 		// turn on spin
 		mySpinController.putEvent(new SpinEvent(this, SpinEvent.SPIN_SLOW));
